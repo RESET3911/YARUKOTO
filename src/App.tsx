@@ -122,17 +122,17 @@ export default function App() {
     : 0;
 
   const tabs = [
-    { key: 'tasks' as Screen, label: 'タスク', icon: '▣' },
-    { key: 'stats' as Screen, label: '統計', icon: '◎' },
-    { key: 'settings' as Screen, label: '設定', icon: '◈' },
+    { key: 'tasks' as Screen, label: 'タスク', icon: '✓' },
+    { key: 'stats' as Screen, label: '統計', icon: '◑' },
+    { key: 'settings' as Screen, label: '設定', icon: '◎' },
   ];
 
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center" style={{ backgroundColor: '#0a0a0f' }}>
+      <div className="min-h-screen flex items-center justify-center bg-gradient-to-b from-primary-50 to-white">
         <div className="text-center">
-          <div className="text-5xl mb-4 opacity-80">{defaultSettings.appIcon}</div>
-          <p className="text-white/30 text-sm tracking-widest uppercase">loading</p>
+          <div className="text-5xl mb-3">{defaultSettings.appIcon}</div>
+          <p className="text-gray-300 text-sm tracking-widest">loading...</p>
         </div>
       </div>
     );
@@ -171,17 +171,17 @@ export default function App() {
   const userName = currentUser === 'A' ? settings.userA.name : settings.userB.name;
 
   return (
-    <div className="min-h-screen pb-20" style={{ backgroundColor: '#0a0a0f' }}>
+    <div className="min-h-screen bg-gray-50 pb-20">
       {/* Top bar */}
-      <div className="sticky top-0 z-10 border-b border-white/[0.06]" style={{ backgroundColor: '#0a0a0f' }}>
+      <div className="bg-white border-b border-gray-100 sticky top-0 z-10">
         <div className="max-w-lg mx-auto px-4 py-3 flex items-center justify-between">
           <button
             onClick={() => { setCurrentUser(null); setScreen('home'); }}
-            className="text-white/40 p-2 -ml-2 min-h-[44px] min-w-[44px] flex items-center justify-center text-xl hover:text-white/70 transition-colors"
+            className="text-gray-400 p-2 -ml-2 min-h-[44px] min-w-[44px] flex items-center justify-center text-lg hover:text-gray-600 transition-colors"
           >←</button>
           <div className="text-center">
-            <p className="font-bold text-white text-sm tracking-wide">{settings.appIcon} uni</p>
-            <p className="text-[11px] text-primary-400 font-medium">{userName}</p>
+            <p className="font-black text-gray-900 text-sm tracking-wide">{settings.appIcon} uni</p>
+            <p className="text-xs text-primary-500 font-semibold">{userName}モード</p>
           </div>
           <div className="w-10" />
         </div>
@@ -204,28 +204,30 @@ export default function App() {
       </div>
 
       {/* Bottom nav */}
-      <div className="fixed bottom-0 left-0 right-0 z-10 border-t border-white/[0.06]" style={{ backgroundColor: '#0a0a0f' }}>
-        <div className="max-w-lg mx-auto flex">
+      <div className="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-100 z-10">
+        <div className="max-w-lg mx-auto flex items-stretch">
           {tabs.map(tab => {
             const isActive = screen === tab.key;
             return (
               <button
                 key={tab.key}
                 onClick={() => setScreen(tab.key)}
-                className="flex-1 flex flex-col items-center py-3 gap-1 min-h-[60px] transition-all relative"
+                className={`flex-1 flex flex-col items-center justify-center py-3 gap-0.5 min-h-[60px] transition-all relative ${
+                  isActive ? 'text-primary-500' : 'text-gray-300'
+                }`}
               >
                 {isActive && (
-                  <span className="absolute top-0 left-1/2 -translate-x-1/2 w-8 h-0.5 bg-primary-400 rounded-full" />
+                  <span className="absolute top-0 left-1/2 -translate-x-1/2 w-6 h-0.5 bg-primary-400 rounded-full" />
                 )}
-                <span className={`text-lg transition-all ${isActive ? 'text-primary-400' : 'text-white/25'}`}>
+                <span className="text-base font-black relative">
                   {tab.icon}
                   {tab.key === 'tasks' && pendingCount > 0 && (
-                    <span className="absolute -top-0.5 ml-0.5 bg-rose-500 text-white text-[10px] font-bold rounded-full w-4 h-4 inline-flex items-center justify-center">
+                    <span className="absolute -top-1.5 -right-2.5 bg-red-500 text-white text-[10px] font-bold rounded-full w-4 h-4 flex items-center justify-center">
                       {pendingCount > 9 ? '9+' : pendingCount}
                     </span>
                   )}
                 </span>
-                <span className={`text-[10px] font-semibold tracking-wide transition-all ${isActive ? 'text-primary-400' : 'text-white/25'}`}>
+                <span className={`text-[10px] font-bold tracking-wide ${isActive ? 'text-primary-500' : 'text-gray-300'}`}>
                   {tab.label}
                 </span>
               </button>

@@ -45,90 +45,88 @@ export default function TaskDetailScreen({ task, currentUser, settings, onUpdate
   const isDone = task.status === 'done';
 
   return (
-    <div className="min-h-screen pb-24" style={{ backgroundColor: '#0a0a0f' }}>
+    <div className="min-h-screen bg-gray-50">
       {/* Header */}
-      <div className="sticky top-0 z-10 border-b border-white/[0.06]" style={{ backgroundColor: '#0a0a0f' }}>
+      <div className="bg-white border-b border-gray-100 sticky top-0 z-10">
         <div className="max-w-lg mx-auto px-4 py-3 flex items-center gap-3">
-          <button onClick={onBack} className="text-white/40 p-2 min-h-[44px] min-w-[44px] flex items-center justify-center text-xl">←</button>
-          <div className="flex-1 min-w-0">
-            <p className="text-white/90 font-bold truncate">{task.title}</p>
-          </div>
+          <button onClick={onBack} className="text-gray-400 p-2 min-h-[44px] min-w-[44px] flex items-center justify-center text-lg">←</button>
+          <p className="flex-1 font-black text-gray-900 truncate">{task.title}</p>
           <button
             onClick={() => onEdit(task)}
-            className="text-primary-400 text-sm font-semibold px-3 py-1.5 rounded-xl border border-primary-400/30 active:bg-primary-500/10"
+            className="text-primary-500 font-bold text-sm px-3 py-1.5 bg-primary-50 rounded-2xl border border-primary-200 active:bg-primary-100"
           >
             編集
           </button>
         </div>
       </div>
 
-      <div className="max-w-lg mx-auto px-4 py-5 space-y-3">
+      <div className="max-w-lg mx-auto px-4 py-4 space-y-3 pb-10">
 
-        {/* Title + badges */}
-        <div className="rounded-2xl border border-white/[0.06] p-5" style={{ backgroundColor: '#111119' }}>
-          <h2 className={`text-xl font-black mb-3 ${isDone ? 'line-through text-white/25' : 'text-white'}`}>
+        {/* Title card */}
+        <div className="bg-white rounded-3xl border border-gray-100 p-5 shadow-sm">
+          <h2 className={`text-xl font-black mb-3 ${isDone ? 'line-through text-gray-300' : 'text-gray-900'}`}>
             {task.title}
           </h2>
-          <div className="flex items-center gap-3 flex-wrap">
+          <div className="flex items-center gap-2 flex-wrap">
             <PriorityBadge priority={task.priority} />
             {task.category && (
-              <span className="text-xs text-white/35 font-medium">{task.category}</span>
+              <span className="text-xs bg-accent-50 text-accent-600 font-semibold px-2 py-0.5 rounded-full border border-accent-100">
+                {task.category}
+              </span>
             )}
-            <span className="text-xs font-bold text-primary-400">{POINTS[task.priority]}pt</span>
-            {isDone && <span className="text-xs text-accent-400 font-semibold">✓ 完了</span>}
+            <span className="text-xs font-bold text-primary-500">{POINTS[task.priority]}pt</span>
+            {isDone && <span className="text-xs text-green-600 font-bold bg-green-50 px-2 py-0.5 rounded-full">✓ 完了</span>}
           </div>
         </div>
 
         {/* Info */}
-        <div className="rounded-2xl border border-white/[0.06] p-4 space-y-3" style={{ backgroundColor: '#111119' }}>
-          {[
-            { label: '担当者', value: assigneeName },
-            { label: '作成者', value: getName(task.createdBy) },
-            ...(task.dueDate ? [{ label: '期限', value: task.dueDate }] : []),
-            ...(task.recurring ? [{ label: '繰り返し', value: task.recurring.type === 'daily' ? '毎日' : task.recurring.type === 'weekly' ? '毎週' : '毎月' }] : []),
-            ...(isDone && task.completedBy ? [{ label: '完了者', value: getName(task.completedBy) }] : []),
-          ].map(({ label, value }) => (
-            <div key={label} className="flex justify-between items-center">
-              <span className="text-xs text-white/30 font-semibold uppercase tracking-wide">{label}</span>
-              <span className="text-sm text-white/70 font-medium">{value}</span>
-            </div>
-          ))}
+        <div className="bg-white rounded-3xl border border-gray-100 p-5 shadow-sm">
+          <div className="space-y-3">
+            {[
+              { label: '担当者', value: assigneeName },
+              { label: '作成者', value: getName(task.createdBy) },
+              ...(task.dueDate ? [{ label: '期限', value: task.dueDate }] : []),
+              ...(task.recurring ? [{ label: '繰り返し', value: task.recurring.type === 'daily' ? '毎日' : task.recurring.type === 'weekly' ? '毎週' : '毎月' }] : []),
+              ...(isDone && task.completedBy ? [{ label: '完了者', value: getName(task.completedBy) }] : []),
+            ].map(({ label, value }) => (
+              <div key={label} className="flex justify-between items-center">
+                <span className="text-xs font-bold text-gray-400 uppercase tracking-wider">{label}</span>
+                <span className="text-sm text-gray-700 font-semibold">{value}</span>
+              </div>
+            ))}
+          </div>
         </div>
 
         {/* Description */}
         {task.description && (
-          <div className="rounded-2xl border border-white/[0.06] p-4" style={{ backgroundColor: '#111119' }}>
-            <p className="text-[10px] font-bold text-white/25 uppercase tracking-widest mb-2">メモ</p>
-            <p className="text-sm text-white/60 leading-relaxed">{task.description}</p>
+          <div className="bg-white rounded-3xl border border-gray-100 p-5 shadow-sm">
+            <p className="text-xs font-bold text-gray-400 uppercase tracking-wider mb-2">メモ</p>
+            <p className="text-sm text-gray-600 leading-relaxed">{task.description}</p>
           </div>
         )}
 
         {/* Subtasks */}
         {task.subtasks.length > 0 && (
-          <div className="rounded-2xl border border-white/[0.06] p-4" style={{ backgroundColor: '#111119' }}>
+          <div className="bg-white rounded-3xl border border-gray-100 p-5 shadow-sm">
             <div className="flex items-center justify-between mb-3">
-              <p className="text-[10px] font-bold text-white/25 uppercase tracking-widest">サブタスク</p>
-              <span className="text-xs text-white/40 font-semibold">
+              <p className="text-xs font-bold text-gray-400 uppercase tracking-wider">サブタスク</p>
+              <span className="text-xs font-bold text-gray-400">
                 {task.subtasks.filter(s => s.done).length}/{task.subtasks.length}
               </span>
             </div>
             <div className="space-y-2">
               {task.subtasks.map(st => (
-                <button
-                  key={st.id}
-                  onClick={() => toggleSubtask(st)}
-                  className="flex items-center gap-3 w-full text-left min-h-[40px]"
-                >
+                <button key={st.id} onClick={() => toggleSubtask(st)} className="flex items-center gap-3 w-full text-left min-h-[40px]">
                   <div className={`w-5 h-5 rounded-full border-2 flex items-center justify-center flex-shrink-0 transition-all ${
-                    st.done ? 'border-accent-500 bg-accent-500' : 'border-white/20'
+                    st.done ? 'bg-green-500 border-green-500' : 'border-gray-200'
                   }`}>
                     {st.done && (
                       <svg className="w-3 h-3 text-white" fill="none" viewBox="0 0 12 12">
-                        <path d="M2 6l3 3 5-5" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                        <path d="M2 6l3 3 5-5" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"/>
                       </svg>
                     )}
                   </div>
-                  <span className={`text-sm flex-1 ${st.done ? 'line-through text-white/25' : 'text-white/70'}`}>{st.title}</span>
+                  <span className={`text-sm flex-1 font-medium ${st.done ? 'line-through text-gray-300' : 'text-gray-700'}`}>{st.title}</span>
                 </button>
               ))}
             </div>
@@ -136,8 +134,8 @@ export default function TaskDetailScreen({ task, currentUser, settings, onUpdate
         )}
 
         {/* Comments */}
-        <div className="rounded-2xl border border-white/[0.06] p-4" style={{ backgroundColor: '#111119' }}>
-          <p className="text-[10px] font-bold text-white/25 uppercase tracking-widest mb-3">
+        <div className="bg-white rounded-3xl border border-gray-100 p-5 shadow-sm">
+          <p className="text-xs font-bold text-gray-400 uppercase tracking-wider mb-3">
             コメント {task.comments.length > 0 && `· ${task.comments.length}`}
           </p>
           {task.comments.length > 0 && (
@@ -146,13 +144,10 @@ export default function TaskDetailScreen({ task, currentUser, settings, onUpdate
                 const isMine = c.author === currentUser;
                 return (
                   <div key={c.id} className={`flex gap-2 ${isMine ? 'flex-row-reverse' : ''}`}>
-                    <div
-                      className={`max-w-[82%] px-3.5 py-2.5 rounded-2xl text-sm ${
-                        isMine ? 'text-white' : 'text-white/70'
-                      }`}
-                      style={{ backgroundColor: isMine ? '#4f46e5' : '#1a1a2a' }}
-                    >
-                      <p className="text-[10px] font-bold mb-0.5 opacity-60">{getName(c.author)}</p>
+                    <div className={`max-w-[80%] px-4 py-2.5 rounded-2xl text-sm ${
+                      isMine ? 'bg-primary-500 text-white' : 'bg-gray-100 text-gray-700'
+                    }`}>
+                      <p className="text-[10px] font-bold mb-0.5 opacity-70">{getName(c.author)}</p>
                       <p className="leading-relaxed">{c.text}</p>
                     </div>
                   </div>
@@ -167,20 +162,16 @@ export default function TaskDetailScreen({ task, currentUser, settings, onUpdate
               onChange={e => setCommentText(e.target.value)}
               onKeyDown={e => { if (e.key === 'Enter') addComment(); }}
               placeholder="コメントを入力..."
-              className="input-field flex-1 py-2 text-sm"
+              className="input-field flex-1 py-2.5 text-sm"
             />
-            <button
-              onClick={addComment}
-              disabled={!commentText.trim()}
-              className="btn-primary px-4 py-2 rounded-xl text-sm"
-            >送信</button>
+            <button onClick={addComment} disabled={!commentText.trim()} className="btn-primary px-4 py-2 rounded-2xl text-sm">送信</button>
           </div>
         </div>
 
         {/* Delete */}
         <button
           onClick={() => setShowDelete(true)}
-          className="w-full py-3 rounded-2xl text-sm font-semibold text-rose-400/60 border border-rose-500/10 active:bg-rose-500/5 transition-all"
+          className="w-full py-3.5 rounded-3xl text-sm font-bold text-red-400 bg-white border border-gray-100 active:bg-red-50 transition-all shadow-sm"
         >
           タスクを削除
         </button>

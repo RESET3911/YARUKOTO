@@ -36,50 +36,48 @@ export default function StatsScreen({ settings, tasks }: Props) {
   const [displayYear, displayMonth] = yearMonth.split('-');
 
   return (
-    <div className="max-w-lg mx-auto px-4 py-5">
-
+    <div className="px-4 py-5">
       {/* Month selector */}
-      <div className="flex items-center justify-between mb-6">
-        <button onClick={() => changeMonth(-1)} className="w-10 h-10 flex items-center justify-center text-white/30 text-xl active:text-white/60 transition-colors">‹</button>
+      <div className="flex items-center justify-between mb-5">
+        <button onClick={() => changeMonth(-1)} className="w-10 h-10 flex items-center justify-center text-gray-400 text-2xl active:text-gray-600 bg-white rounded-2xl border border-gray-100 shadow-sm">‹</button>
         <div className="text-center">
-          <p className="font-black text-white text-xl">{displayYear}<span className="text-white/30 text-sm font-normal">年</span>{displayMonth}<span className="text-white/30 text-sm font-normal">月</span></p>
+          <p className="font-black text-gray-900 text-lg">{displayYear}年{displayMonth}月</p>
         </div>
-        <button onClick={() => changeMonth(1)} className="w-10 h-10 flex items-center justify-center text-white/30 text-xl active:text-white/60 transition-colors">›</button>
+        <button onClick={() => changeMonth(1)} className="w-10 h-10 flex items-center justify-center text-gray-400 text-2xl active:text-gray-600 bg-white rounded-2xl border border-gray-100 shadow-sm">›</button>
       </div>
 
-      {/* Summary numbers */}
-      <div className="grid grid-cols-2 gap-2 mb-4">
-        <div className="rounded-2xl border border-white/[0.06] p-4 text-center" style={{ backgroundColor: '#111119' }}>
-          <p className="text-3xl font-black text-accent-400">{monthTasks.length}</p>
-          <p className="text-[10px] text-white/25 mt-1 font-bold uppercase tracking-wider">完了タスク</p>
+      {/* Summary */}
+      <div className="grid grid-cols-2 gap-3 mb-4">
+        <div className="bg-white rounded-3xl border border-gray-100 p-4 text-center shadow-sm">
+          <p className="text-3xl font-black text-green-500">{monthTasks.length}</p>
+          <p className="text-[10px] font-bold text-gray-400 uppercase tracking-wider mt-1">完了タスク</p>
         </div>
-        <div className="rounded-2xl border border-white/[0.06] p-4 text-center" style={{ backgroundColor: '#111119' }}>
-          <p className="text-3xl font-black text-primary-400">{totalPoints}</p>
-          <p className="text-[10px] text-white/25 mt-1 font-bold uppercase tracking-wider">合計ポイント</p>
+        <div className="bg-white rounded-3xl border border-gray-100 p-4 text-center shadow-sm">
+          <p className="text-3xl font-black text-primary-500">{totalPoints}</p>
+          <p className="text-[10px] font-bold text-gray-400 uppercase tracking-wider mt-1">合計ポイント</p>
         </div>
       </div>
 
       {/* Points comparison */}
-      <div className="rounded-2xl border border-white/[0.06] p-5 mb-4" style={{ backgroundColor: '#111119' }}>
-        <p className="text-[10px] font-bold text-white/25 uppercase tracking-[0.15em] mb-5">ポイント比較</p>
+      <div className="bg-white rounded-3xl border border-gray-100 p-5 mb-3 shadow-sm">
+        <p className="text-xs font-bold text-gray-400 uppercase tracking-wider mb-4">ポイント比較</p>
         {userStats.map((s, i) => (
           <div key={s.user} className="mb-5 last:mb-0">
-            <div className="flex justify-between items-baseline mb-2.5">
-              <span className="text-sm text-white/60 font-semibold">{s.name}</span>
-              <div className="text-right">
-                <span className="text-xl font-black" style={{ color: i === 0 ? '#818cf8' : '#a78bfa' }}>{s.points}</span>
-                <span className="text-xs text-white/25 ml-0.5">pt</span>
-                <span className="text-xs text-white/25 ml-2">· {s.count}件</span>
-              </div>
+            <div className="flex justify-between items-baseline mb-2">
+              <span className="text-sm font-bold text-gray-700">{s.name}</span>
+              <span className={`font-black ${i === 0 ? 'text-primary-500' : 'text-accent-500'}`}>
+                {s.points}<span className="text-xs font-normal text-gray-400 ml-0.5">pt</span>
+                <span className="text-xs font-normal text-gray-400 ml-1.5">· {s.count}件</span>
+              </span>
             </div>
-            <div className="h-1.5 rounded-full overflow-hidden" style={{ backgroundColor: 'rgba(255,255,255,0.05)' }}>
+            <div className="h-2.5 bg-gray-100 rounded-full overflow-hidden">
               <div
                 className="h-full rounded-full transition-all duration-700"
                 style={{
                   width: `${(s.points / maxPoints) * 100}%`,
                   background: i === 0
-                    ? 'linear-gradient(90deg, #6366f1, #818cf8)'
-                    : 'linear-gradient(90deg, #8b5cf6, #a78bfa)',
+                    ? 'linear-gradient(90deg, #38bdf8, #0ea5e9)'
+                    : 'linear-gradient(90deg, #a78bfa, #8b5cf6)',
                 }}
               />
             </div>
@@ -87,26 +85,23 @@ export default function StatsScreen({ settings, tasks }: Props) {
         ))}
       </div>
 
-      {/* Category breakdown */}
+      {/* Category */}
       {Object.keys(categories).length > 0 && (
-        <div className="rounded-2xl border border-white/[0.06] p-5" style={{ backgroundColor: '#111119' }}>
-          <p className="text-[10px] font-bold text-white/25 uppercase tracking-[0.15em] mb-4">カテゴリ別</p>
+        <div className="bg-white rounded-3xl border border-gray-100 p-5 shadow-sm">
+          <p className="text-xs font-bold text-gray-400 uppercase tracking-wider mb-4">カテゴリ別</p>
           <div className="space-y-3">
             {Object.entries(categories).sort((a, b) => b[1] - a[1]).map(([cat, count]) => {
               const maxCount = Math.max(...Object.values(categories));
               return (
                 <div key={cat}>
                   <div className="flex justify-between items-center mb-1.5">
-                    <span className="text-sm text-white/60 font-medium">{cat}</span>
-                    <span className="text-sm font-bold text-white/50">{count}件</span>
+                    <span className="text-sm text-gray-700 font-semibold">{cat}</span>
+                    <span className="text-sm font-bold text-accent-500">{count}件</span>
                   </div>
-                  <div className="h-1 rounded-full overflow-hidden" style={{ backgroundColor: 'rgba(255,255,255,0.05)' }}>
+                  <div className="h-2 bg-gray-100 rounded-full overflow-hidden">
                     <div
-                      className="h-full rounded-full"
-                      style={{
-                        width: `${(count / maxCount) * 100}%`,
-                        backgroundColor: 'rgba(99,102,241,0.5)',
-                      }}
+                      className="h-full rounded-full bg-gradient-to-r from-accent-400 to-accent-500"
+                      style={{ width: `${(count / maxCount) * 100}%` }}
                     />
                   </div>
                 </div>
@@ -117,9 +112,9 @@ export default function StatsScreen({ settings, tasks }: Props) {
       )}
 
       {monthTasks.length === 0 && (
-        <div className="rounded-2xl border border-white/[0.06] text-center py-16" style={{ backgroundColor: '#111119' }}>
-          <p className="text-4xl mb-3 text-white/10">◎</p>
-          <p className="text-white/25 text-sm font-medium">この月の完了タスクはありません</p>
+        <div className="bg-white rounded-3xl border border-gray-100 text-center py-16 shadow-sm">
+          <p className="text-3xl mb-3">📭</p>
+          <p className="text-gray-400 font-semibold text-sm">この月の完了タスクはありません</p>
         </div>
       )}
     </div>

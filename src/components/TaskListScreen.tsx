@@ -42,57 +42,57 @@ export default function TaskListScreen({ currentUser, settings, tasks, onToggleD
       return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
     });
 
+  const todoCount = filtered.filter(t => t.status === 'todo').length;
+
   const filterTabs: { key: Filter; label: string }[] = [
     { key: 'mine', label: selfName },
     { key: 'theirs', label: otherName },
     { key: 'all', label: '全員' },
   ];
 
-  const todoCount = filtered.filter(t => t.status === 'todo').length;
-
   return (
-    <div className="max-w-lg mx-auto px-4 py-5">
-      {/* Header */}
-      <div className="flex items-center justify-between mb-5">
-        <div>
-          <p className="text-white/90 font-bold text-lg">
-            {todoCount > 0 ? `${todoCount} 件のタスク` : 'すべて完了 🎉'}
-          </p>
+    <div className="px-4 py-5">
+      {/* Filter + toggle row */}
+      <div className="flex items-center gap-2 mb-4">
+        <div className="flex flex-1 bg-white rounded-2xl border border-gray-100 p-1 gap-1 shadow-sm">
+          {filterTabs.map(({ key, label }) => (
+            <button
+              key={key}
+              onClick={() => setFilter(key)}
+              className={`flex-1 py-2 rounded-xl text-xs font-bold transition-all min-h-[36px] ${
+                filter === key
+                  ? 'bg-primary-500 text-white shadow-sm'
+                  : 'text-gray-400 active:text-gray-600'
+              }`}
+            >
+              {label}
+            </button>
+          ))}
         </div>
         <button
           onClick={() => setShowDone(v => !v)}
-          className={`text-xs px-3 py-1.5 rounded-full font-semibold transition-all ${
+          className={`text-xs px-3 py-2 rounded-2xl font-bold border transition-all min-h-[44px] ${
             showDone
-              ? 'bg-accent-500/15 text-accent-400 border border-accent-500/20'
-              : 'text-white/30 border border-white/10'
+              ? 'bg-green-50 text-green-600 border-green-200'
+              : 'bg-white text-gray-400 border-gray-100'
           }`}
         >
-          {showDone ? '完了表示中' : '完了を表示'}
+          完了
         </button>
       </div>
 
-      {/* Filter tabs */}
-      <div className="flex gap-1.5 mb-5 p-1 rounded-2xl border border-white/[0.06]" style={{ backgroundColor: '#111119' }}>
-        {filterTabs.map(({ key, label }) => (
-          <button
-            key={key}
-            onClick={() => setFilter(key)}
-            className={`flex-1 py-2 rounded-xl text-xs font-bold transition-all min-h-[36px] ${
-              filter === key
-                ? 'bg-primary-500 text-white shadow'
-                : 'text-white/30 active:text-white/60'
-            }`}
-          >
-            {label}
-          </button>
-        ))}
-      </div>
+      {/* Count */}
+      {todoCount > 0 && (
+        <p className="text-xs text-gray-400 font-semibold mb-3 px-1">
+          {todoCount}件 未完了
+        </p>
+      )}
 
       {/* Task list */}
       {filtered.length === 0 ? (
-        <div className="rounded-2xl border border-white/[0.06] text-center py-16" style={{ backgroundColor: '#111119' }}>
-          <p className="text-4xl mb-3">✦</p>
-          <p className="text-white/25 text-sm font-medium">タスクがありません</p>
+        <div className="bg-white rounded-3xl border border-gray-100 text-center py-16 shadow-sm">
+          <p className="text-3xl mb-3">🎉</p>
+          <p className="text-gray-400 font-semibold text-sm">タスクがありません</p>
         </div>
       ) : (
         <div className="space-y-2 pb-24">
@@ -113,8 +113,8 @@ export default function TaskListScreen({ currentUser, settings, tasks, onToggleD
       {/* FAB */}
       <button
         onClick={onAdd}
-        className="fixed bottom-24 right-5 w-14 h-14 rounded-2xl text-white text-2xl flex items-center justify-center z-20 shadow-lg transition-all active:scale-95"
-        style={{ background: 'linear-gradient(135deg, #6366f1, #818cf8)' }}
+        className="fixed bottom-24 right-5 w-14 h-14 rounded-2xl text-white text-2xl font-light flex items-center justify-center z-20 shadow-lg transition-all active:scale-95"
+        style={{ background: 'linear-gradient(135deg, #38bdf8, #0ea5e9)' }}
       >
         +
       </button>
