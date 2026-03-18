@@ -24,14 +24,12 @@ export default function App() {
   const [editingTask, setEditingTask] = useState<Task | undefined>(undefined);
   const [toast, setToast] = useState<string | null>(null);
 
-  // Firestore subscriptions
   useEffect(() => {
     const unsubS = subscribeSettings(s => { setSettings(s); setLoading(false); });
     const unsubT = subscribeTasks(t => setTasks(t));
     return () => { unsubS(); unsubT(); };
   }, []);
 
-  // Due date reminder check on load
   useEffect(() => {
     if (loading || !settings.ntfyTopic) return;
     const today = new Date().toISOString().slice(0, 10);
@@ -61,8 +59,6 @@ export default function App() {
       status: isDone ? 'done' : 'todo',
       ...(isDone ? { completedBy: currentUser, completedAt: now } : { completedBy: undefined, completedAt: undefined }),
     };
-
-    // Optimistic update
     setTasks(prev => prev.map(t => t.id === task.id ? updated : t));
     updateTask(task.id, {
       status: updated.status,
@@ -71,10 +67,7 @@ export default function App() {
     }).catch(() => setToast('更新に失敗しました'));
 
     if (isDone) {
-      // Send completion notification
       notifyCompleted(task, settings, currentUser).catch(() => {});
-
-      // Generate next recurring task
       if (task.recurring) {
         const nextTask: Task = {
           ...task,
@@ -104,12 +97,9 @@ export default function App() {
     const isNew = !tasks.find(t => t.id === task.id);
     setTasks(prev => isNew ? [...prev, task] : prev.map(t => t.id === task.id ? task : t));
     saveTask(task).catch(() => setToast('保存に失敗しました'));
-
-    // Notify if assigned to other user
     if (currentUser && isNew && task.assignee !== currentUser) {
       notifyAssigned(task, settings, task.assignee === 'both' ? (currentUser === 'A' ? 'B' : 'A') : task.assignee).catch(() => {});
     }
-
     setToast(isNew ? 'タスクを追加しました' : 'タスクを更新しました');
     setEditingTask(undefined);
     setScreen('tasks');
@@ -132,17 +122,17 @@ export default function App() {
     : 0;
 
   const tabs = [
-    { key: 'tasks' as Screen, label: 'タスク', icon: '📋' },
-    { key: 'stats' as Screen, label: '統計', icon: '📊' },
-    { key: 'settings' as Screen, label: '設定', icon: '⚙️' },
+    { key: 'tasks' as Screen, label: 'タスク', icon: '▣' },
+    { key: 'stats' as Screen, label: '統計', icon: '◎' },
+    { key: 'settings' as Screen, label: '設定', icon: '◈' },
   ];
 
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gradient-to-b from-primary-50 to-white">
+      <div className="min-h-screen flex items-center justify-center" style={{ backgroundColor: '#0a0a0f' }}>
         <div className="text-center">
-          <div className="text-4xl mb-3">✅</div>
-          <p className="text-gray-500 text-sm">読み込み中...</p>
+          <div className="text-5xl mb-4 opacity-80">{defaultSettings.appIcon}</div>
+          <p className="text-white/30 text-sm tracking-widest uppercase">loading</p>
         </div>
       </div>
     );
@@ -152,7 +142,6 @@ export default function App() {
     return <HomeScreen settings={settings} tasks={tasks} onSelectUser={handleSelectUser} />;
   }
 
-  // Detail screen (no bottom nav)
   if (screen === 'detail' && selectedTask) {
     return (
       <TaskDetailScreen
@@ -167,7 +156,6 @@ export default function App() {
     );
   }
 
-  // Add/edit screen (no bottom nav)
   if (screen === 'add') {
     return (
       <AddTaskScreen
@@ -183,17 +171,17 @@ export default function App() {
   const userName = currentUser === 'A' ? settings.userA.name : settings.userB.name;
 
   return (
-    <div className="min-h-screen bg-gray-50 pb-20">
+    <div className="min-h-screen pb-20" style={{ backgroundColor: '#0a0a0f' }}>
       {/* Top bar */}
-      <div className="bg-white border-b border-gray-100 sticky top-0 z-10">
+      <div className="sticky top-0 z-10 border-b border-white/[0.06]" style={{ backgroundColor: '#0a0a0f' }}>
         <div className="max-w-lg mx-auto px-4 py-3 flex items-center justify-between">
           <button
             onClick={() => { setCurrentUser(null); setScreen('home'); }}
-            className="text-gray-500 p-2 -ml-2 min-h-[44px] min-w-[44px] flex items-center justify-center"
+            className="text-white/40 p-2 -ml-2 min-h-[44px] min-w-[44px] flex items-center justify-center text-xl hover:text-white/70 transition-colors"
           >←</button>
           <div className="text-center">
-            <p className="font-bold text-gray-900 text-sm">{settings.appIcon} uni</p>
-            <p className="text-xs text-primary-500">{userName}モード</p>
+            <p className="font-bold text-white text-sm tracking-wide">{settings.appIcon} uni</p>
+            <p className="text-[11px] text-primary-400 font-medium">{userName}</p>
           </div>
           <div className="w-10" />
         </div>
@@ -216,25 +204,33 @@ export default function App() {
       </div>
 
       {/* Bottom nav */}
-      <div className="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-100 z-10">
+      <div className="fixed bottom-0 left-0 right-0 z-10 border-t border-white/[0.06]" style={{ backgroundColor: '#0a0a0f' }}>
         <div className="max-w-lg mx-auto flex">
-          {tabs.map(tab => (
-            <button
-              key={tab.key}
-              onClick={() => setScreen(tab.key)}
-              className={`flex-1 flex flex-col items-center py-2 gap-0.5 min-h-[60px] transition-colors ${screen === tab.key ? 'text-primary-500' : 'text-gray-400'}`}
-            >
-              <span className="text-xl relative">
-                {tab.icon}
-                {tab.key === 'tasks' && pendingCount > 0 && (
-                  <span className="absolute -top-1 -right-2 bg-red-500 text-white text-xs font-bold rounded-full w-4 h-4 flex items-center justify-center">
-                    {pendingCount > 9 ? '9+' : pendingCount}
-                  </span>
+          {tabs.map(tab => {
+            const isActive = screen === tab.key;
+            return (
+              <button
+                key={tab.key}
+                onClick={() => setScreen(tab.key)}
+                className="flex-1 flex flex-col items-center py-3 gap-1 min-h-[60px] transition-all relative"
+              >
+                {isActive && (
+                  <span className="absolute top-0 left-1/2 -translate-x-1/2 w-8 h-0.5 bg-primary-400 rounded-full" />
                 )}
-              </span>
-              <span className="text-xs font-medium">{tab.label}</span>
-            </button>
-          ))}
+                <span className={`text-lg transition-all ${isActive ? 'text-primary-400' : 'text-white/25'}`}>
+                  {tab.icon}
+                  {tab.key === 'tasks' && pendingCount > 0 && (
+                    <span className="absolute -top-0.5 ml-0.5 bg-rose-500 text-white text-[10px] font-bold rounded-full w-4 h-4 inline-flex items-center justify-center">
+                      {pendingCount > 9 ? '9+' : pendingCount}
+                    </span>
+                  )}
+                </span>
+                <span className={`text-[10px] font-semibold tracking-wide transition-all ${isActive ? 'text-primary-400' : 'text-white/25'}`}>
+                  {tab.label}
+                </span>
+              </button>
+            );
+          })}
         </div>
       </div>
 

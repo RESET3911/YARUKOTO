@@ -21,6 +21,8 @@ export default function TaskListScreen({ currentUser, settings, tasks, onToggleD
   const [showDone, setShowDone] = useState(false);
 
   const otherUser: User = currentUser === 'A' ? 'B' : 'A';
+  const selfName = currentUser === 'A' ? settings.userA.name : settings.userB.name;
+  const otherName = otherUser === 'A' ? settings.userA.name : settings.userB.name;
 
   const filtered = tasks
     .filter(t => {
@@ -41,30 +43,45 @@ export default function TaskListScreen({ currentUser, settings, tasks, onToggleD
     });
 
   const filterTabs: { key: Filter; label: string }[] = [
-    { key: 'mine', label: '自分' },
-    { key: 'theirs', label: '相手' },
+    { key: 'mine', label: selfName },
+    { key: 'theirs', label: otherName },
     { key: 'all', label: '全員' },
   ];
 
+  const todoCount = filtered.filter(t => t.status === 'todo').length;
+
   return (
-    <div className="max-w-lg mx-auto px-4 py-6">
-      <div className="flex items-center justify-between mb-4">
-        <h2 className="text-xl font-bold text-gray-900">📋 タスク</h2>
+    <div className="max-w-lg mx-auto px-4 py-5">
+      {/* Header */}
+      <div className="flex items-center justify-between mb-5">
+        <div>
+          <p className="text-white/90 font-bold text-lg">
+            {todoCount > 0 ? `${todoCount} 件のタスク` : 'すべて完了 🎉'}
+          </p>
+        </div>
         <button
           onClick={() => setShowDone(v => !v)}
-          className={`text-xs px-3 py-1.5 rounded-full font-medium transition-colors ${showDone ? 'bg-green-100 text-green-700' : 'bg-gray-100 text-gray-500'}`}
+          className={`text-xs px-3 py-1.5 rounded-full font-semibold transition-all ${
+            showDone
+              ? 'bg-accent-500/15 text-accent-400 border border-accent-500/20'
+              : 'text-white/30 border border-white/10'
+          }`}
         >
-          {showDone ? '✓ 完了表示中' : '完了を表示'}
+          {showDone ? '完了表示中' : '完了を表示'}
         </button>
       </div>
 
       {/* Filter tabs */}
-      <div className="flex bg-gray-100 rounded-xl p-1 mb-4">
+      <div className="flex gap-1.5 mb-5 p-1 rounded-2xl border border-white/[0.06]" style={{ backgroundColor: '#111119' }}>
         {filterTabs.map(({ key, label }) => (
           <button
             key={key}
             onClick={() => setFilter(key)}
-            className={`flex-1 py-2 rounded-lg text-sm font-medium transition-colors min-h-[36px] ${filter === key ? 'bg-white text-primary-600 shadow-sm' : 'text-gray-500'}`}
+            className={`flex-1 py-2 rounded-xl text-xs font-bold transition-all min-h-[36px] ${
+              filter === key
+                ? 'bg-primary-500 text-white shadow'
+                : 'text-white/30 active:text-white/60'
+            }`}
           >
             {label}
           </button>
@@ -73,12 +90,12 @@ export default function TaskListScreen({ currentUser, settings, tasks, onToggleD
 
       {/* Task list */}
       {filtered.length === 0 ? (
-        <div className="card text-center py-12">
-          <div className="text-4xl mb-3">🎉</div>
-          <p className="text-gray-500">タスクはありません</p>
+        <div className="rounded-2xl border border-white/[0.06] text-center py-16" style={{ backgroundColor: '#111119' }}>
+          <p className="text-4xl mb-3">✦</p>
+          <p className="text-white/25 text-sm font-medium">タスクがありません</p>
         </div>
       ) : (
-        <div className="space-y-3 pb-20">
+        <div className="space-y-2 pb-24">
           {filtered.map(task => (
             <TaskCard
               key={task.id}
@@ -96,9 +113,10 @@ export default function TaskListScreen({ currentUser, settings, tasks, onToggleD
       {/* FAB */}
       <button
         onClick={onAdd}
-        className="fixed bottom-24 right-6 w-14 h-14 bg-primary-500 text-white rounded-full shadow-lg text-2xl flex items-center justify-center active:bg-primary-700 z-20"
+        className="fixed bottom-24 right-5 w-14 h-14 rounded-2xl text-white text-2xl flex items-center justify-center z-20 shadow-lg transition-all active:scale-95"
+        style={{ background: 'linear-gradient(135deg, #6366f1, #818cf8)' }}
       >
-        ＋
+        +
       </button>
     </div>
   );

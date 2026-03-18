@@ -1,11 +1,18 @@
 import { Priority } from '../types';
-const config: Record<Priority, { label: string; color: string }> = {
-  low:    { label: '低',   color: 'bg-gray-100 text-gray-600' },
-  medium: { label: '中',   color: 'bg-blue-100 text-blue-700' },
-  high:   { label: '高',   color: 'bg-orange-100 text-orange-700' },
-  urgent: { label: '緊急', color: 'bg-red-100 text-red-700' },
+
+const config: Record<Priority, { label: string; color: string; dot: string }> = {
+  urgent: { label: '緊急', color: 'text-rose-400',   dot: 'bg-rose-400' },
+  high:   { label: '高',   color: 'text-orange-400', dot: 'bg-orange-400' },
+  medium: { label: '中',   color: 'text-blue-400',   dot: 'bg-blue-400' },
+  low:    { label: '低',   color: 'text-white/30',   dot: 'bg-white/20' },
 };
+
 export default function PriorityBadge({ priority }: { priority: Priority }) {
-  const { label, color } = config[priority];
-  return <span className={`text-xs px-2 py-0.5 rounded-full font-semibold ${color}`}>{label}</span>;
+  const { label, color, dot } = config[priority];
+  return (
+    <span className={`inline-flex items-center gap-1 text-xs font-semibold ${color}`}>
+      <span className={`w-1.5 h-1.5 rounded-full ${dot}`} />
+      {label}
+    </span>
+  );
 }

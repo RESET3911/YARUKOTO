@@ -25,72 +25,86 @@ export default function HomeScreen({ settings, tasks, onSelectUser }: Props) {
   const pB = monthPoints('B');
   const maxP = Math.max(pA, pB, 1);
 
+  const totalTodo = tasks.filter(t => t.status === 'todo').length;
+  const totalDone = tasks.filter(t => t.status === 'done').length;
+
   return (
-    <div className="min-h-screen bg-gradient-to-b from-primary-50 to-white">
-      <div className="max-w-lg mx-auto px-4 py-8">
+    <div className="min-h-screen" style={{ backgroundColor: '#0a0a0f' }}>
+      <div className="max-w-lg mx-auto px-5 py-10">
+
         {/* Header */}
-        <div className="text-center mb-8">
-          <h1 className="text-4xl font-bold bg-gradient-to-r from-primary-500 to-accent-500 bg-clip-text text-transparent">
-            {settings.appIcon} uni
+        <div className="mb-10">
+          <p className="text-white/25 text-xs tracking-[0.2em] uppercase mb-2">2人のやることリスト</p>
+          <h1 className="text-5xl font-black text-white tracking-tight">
+            {settings.appIcon} <span className="text-primary-400">uni</span>
           </h1>
-          <p className="text-gray-500 mt-2 text-sm">2人のやることリスト</p>
         </div>
 
-        {/* Today alert */}
+        {/* Due today alert */}
         {todayDue > 0 && (
-          <div className="bg-orange-50 border border-orange-200 rounded-xl p-3 mb-6 flex items-center gap-2">
-            <span>⏰</span>
-            <p className="text-sm text-orange-700 font-medium">今日期限のタスクが{todayDue}件あります</p>
+          <div className="mb-6 rounded-2xl border border-amber-500/20 px-4 py-3 flex items-center gap-3" style={{ backgroundColor: 'rgba(251,191,36,0.06)' }}>
+            <span className="text-amber-400 text-lg">⚡</span>
+            <p className="text-sm text-amber-300/80 font-medium">今日期限のタスクが <span className="text-amber-300 font-bold">{todayDue}件</span></p>
           </div>
         )}
 
-        {/* User buttons */}
-        <p className="text-center text-gray-600 font-medium mb-4">どちらで使いますか？</p>
-        <div className="flex gap-4 mb-8">
+        {/* User selection */}
+        <p className="text-white/25 text-xs tracking-[0.15em] uppercase mb-4">だれで使う？</p>
+        <div className="flex gap-3 mb-8">
           {(['A', 'B'] as User[]).map(user => {
             const name = user === 'A' ? settings.userA.name : settings.userB.name;
             const count = myTaskCount(user);
+            const isA = user === 'A';
             return (
               <button
                 key={user}
                 onClick={() => onSelectUser(user)}
-                className="flex-1 bg-white rounded-2xl shadow-sm p-6 flex flex-col items-center gap-3 active:bg-primary-50 transition-colors border-2 border-transparent active:border-primary-200 min-h-[140px]"
+                className="flex-1 rounded-3xl p-5 flex flex-col items-center gap-4 min-h-[160px] transition-all active:scale-95 border border-white/[0.07]"
+                style={{ backgroundColor: '#111119' }}
               >
-                <div className="relative">
-                  <div className="w-16 h-16 rounded-full bg-gradient-to-br from-primary-300 to-accent-400 flex items-center justify-center text-white text-2xl font-bold shadow-md">
-                    {name.charAt(0)}
-                  </div>
-                  {count > 0 && (
-                    <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs font-bold rounded-full w-6 h-6 flex items-center justify-center shadow">
-                      {count}
-                    </span>
-                  )}
+                <div
+                  className="w-16 h-16 rounded-2xl flex items-center justify-center text-white text-2xl font-black"
+                  style={{
+                    background: isA
+                      ? 'linear-gradient(135deg, #6366f1, #818cf8)'
+                      : 'linear-gradient(135deg, #8b5cf6, #a78bfa)',
+                  }}
+                >
+                  {name.charAt(0)}
                 </div>
                 <div className="text-center">
-                  <p className="font-bold text-gray-900 text-lg">{name}</p>
-                  <p className="text-sm text-gray-400 mt-1">{count > 0 ? `残り${count}件` : 'なし'}</p>
+                  <p className="font-bold text-white text-base">{name}</p>
+                  <p className={`text-xs mt-1 font-semibold ${count > 0 ? 'text-primary-400' : 'text-white/25'}`}>
+                    {count > 0 ? `${count} 件残り` : '全部完了'}
+                  </p>
                 </div>
               </button>
             );
           })}
         </div>
 
-        {/* Points comparison */}
-        <div className="card mb-4">
-          <p className="text-sm font-semibold text-gray-700 mb-3">今月のポイント</p>
+        {/* Points */}
+        <div className="rounded-2xl border border-white/[0.07] p-5 mb-4" style={{ backgroundColor: '#111119' }}>
+          <p className="text-[10px] font-bold text-white/30 uppercase tracking-[0.15em] mb-4">今月のポイント</p>
           {(['A', 'B'] as User[]).map(user => {
             const name = user === 'A' ? settings.userA.name : settings.userB.name;
             const pts = user === 'A' ? pA : pB;
+            const isA = user === 'A';
             return (
-              <div key={user} className="mb-3 last:mb-0">
-                <div className="flex justify-between text-sm mb-1">
-                  <span className="text-gray-600">{name}</span>
-                  <span className="font-bold text-primary-600">{pts}pt</span>
+              <div key={user} className="mb-4 last:mb-0">
+                <div className="flex justify-between items-baseline mb-2">
+                  <span className="text-sm text-white/60 font-medium">{name}</span>
+                  <span className="text-base font-black" style={{ color: isA ? '#818cf8' : '#a78bfa' }}>{pts}<span className="text-xs font-normal text-white/30 ml-0.5">pt</span></span>
                 </div>
-                <div className="h-3 bg-gray-100 rounded-full overflow-hidden">
+                <div className="h-1.5 rounded-full overflow-hidden" style={{ backgroundColor: 'rgba(255,255,255,0.05)' }}>
                   <div
-                    className="h-full bg-gradient-to-r from-primary-400 to-accent-400 rounded-full transition-all"
-                    style={{ width: `${(pts / maxP) * 100}%` }}
+                    className="h-full rounded-full transition-all duration-700"
+                    style={{
+                      width: `${(pts / maxP) * 100}%`,
+                      background: isA
+                        ? 'linear-gradient(90deg, #6366f1, #818cf8)'
+                        : 'linear-gradient(90deg, #8b5cf6, #a78bfa)',
+                    }}
                   />
                 </div>
               </div>
@@ -99,15 +113,15 @@ export default function HomeScreen({ settings, tasks, onSelectUser }: Props) {
         </div>
 
         {/* Stats */}
-        <div className="grid grid-cols-3 gap-3">
+        <div className="grid grid-cols-3 gap-2">
           {[
-            { label: '未完了', count: tasks.filter(t => t.status === 'todo').length, color: 'text-blue-500' },
-            { label: '完了済', count: tasks.filter(t => t.status === 'done').length, color: 'text-green-500' },
-            { label: '今日期限', count: todayDue, color: 'text-orange-500' },
-          ].map(({ label, count, color }) => (
-            <div key={label} className="card text-center">
-              <p className={`text-2xl font-bold ${color}`}>{count}</p>
-              <p className="text-xs text-gray-500 mt-0.5">{label}</p>
+            { label: '未完了', value: totalTodo, color: '#818cf8' },
+            { label: '完了', value: totalDone, color: '#4ade80' },
+            { label: '今日期限', value: todayDue, color: '#fb923c' },
+          ].map(({ label, value, color }) => (
+            <div key={label} className="rounded-2xl border border-white/[0.07] p-4 text-center" style={{ backgroundColor: '#111119' }}>
+              <p className="text-2xl font-black" style={{ color }}>{value}</p>
+              <p className="text-[10px] text-white/30 mt-1 font-semibold uppercase tracking-wide">{label}</p>
             </div>
           ))}
         </div>
